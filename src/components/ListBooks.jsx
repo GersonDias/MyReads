@@ -17,9 +17,8 @@ class ListBooks extends React.Component {
   changeBookShelf = (book, shelfTitle) => {
     this.oldState = this.state;
 
-    /* Updating the state locally, so the user doesn't need to wait the call for API update */
+    /* Updating the state locally, so the user doesn't need to wait the call to Update method */
     this.setState({
-      ...this.state,
       books: this.sortBooksByTitle(
         this.state.books.map(b => {
           return b.id !== book.id

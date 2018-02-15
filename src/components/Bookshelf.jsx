@@ -26,7 +26,9 @@ class Bookshelf extends React.Component {
                             width: 128,
                             height: 193,
                             backgroundImage: `url("${
-                              book.imageLinks.smallThumbnail
+                              book.imageLinks
+                                ? book.imageLinks.smallThumbnail
+                                : undefined
                             }"`
                           }}
                         />
