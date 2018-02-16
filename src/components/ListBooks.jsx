@@ -68,6 +68,7 @@ class ListBooks extends React.Component {
   render() {
     return (
       <div className="list-books">
+        <button onClick={() => this.props.addCounter()}>Button</button>
         <div className="list-books-title">
           <h1>MyReads</h1>
         </div>
