@@ -1,65 +1,37 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { search, update, getAll } from '../services/BooksAPI';
 import Bookshelf from './Bookshelf';
+import PropTypes from 'prop-types';
 
 class Search extends React.Component {
-  state = {
-    books: []
+  static propTypes = {
+    books: PropTypes.array,
+    booksInAShelf: PropTypes.array,
+    onSearchBooks: PropTypes.func.isRequired,
+    onChangeABook: PropTypes.func.isRequired,
+    onClearSearch: PropTypes.func.isRequired
   };
 
-  currentlyBooks = { books: [] };
-
-  componentDidMount() {
-    // should getAll books to be able to sync shelf state.
-    // this should be done because search API doesn't provide the shelf property
-    getAll()
-      .then(books => (this.currentlyBooks = books))
-      .catch(err => {
-        alert('Unable to get currently books on a shelf.');
-        console.log(err);
-      });
-  }
-
   clearState = () => {
-    this.setState({ books: [] });
+    this.props.onClearSearch();
   };
 
   handleSearch = ev => {
     if (ev.currentTarget.value === '') {
-      this.clearState();
+      this.props.onClearSearch();
       return;
     }
 
-    if (ev.currentTarget.value.length >= 3) {
-      search(ev.currentTarget.value)
-        .then(response => {
-          if (response.error) {
-            this.setState({ books: [] });
-            return;
-          }
-
-          let enhancedBooks = response.map(book => {
-            let bookInAShelf = this.currentlyBooks.find(
-              bookInAShelf => book.id === bookInAShelf.id
-            );
-            if (bookInAShelf)
-              return Object.assign({}, book, {
-                shelf: bookInAShelf.shelf
-              });
-
-            return book;
-          });
-
-          this.setState({ books: enhancedBooks });
-        })
-        .catch(err => console.log('error ' + err));
-    }
+    this.props.onSearchBooks(ev.currentTarget.value);
   };
 
   changeShelf = (book, shelf) => {
-    update(book, shelf);
+    this.props.onChangeABook(book, shelf);
   };
+
+  componentWillUnmount() {
+    this.props.onClearSearch();
+  }
 
   render() {
     return (
@@ -79,7 +51,7 @@ class Search extends React.Component {
         <div className="search-books-results">
           <Bookshelf
             shelfTitle="Search results"
-            books={this.state.books}
+            books={this.props.books}
             onChangeShelf={this.changeShelf}
           />
         </div>

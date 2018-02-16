@@ -1,69 +1,17 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import Bookshelf from './Bookshelf';
-import { getAll, update } from '../services/BooksAPI';
+import PropTypes from 'prop-types';
 
 class ListBooks extends React.Component {
-  state = {
-    books: []
+  static propTypes = {
+    books: PropTypes.array.isRequired,
+    onBookChanged: PropTypes.func.isRequired
   };
-
-  oldState = { books: [] };
 
   getBooksForShelf = shelfTitle => {
-    return this.state.books.filter(book => book.shelf === shelfTitle);
+    return this.props.books.filter(book => book.shelf === shelfTitle);
   };
-
-  changeBookShelf = (book, shelfTitle) => {
-    this.oldState = this.state;
-
-    /* Updating the state locally, so the user doesn't need to wait the call to Update method */
-    this.setState({
-      books: this.sortBooksByTitle(
-        this.state.books.map(b => {
-          return b.id !== book.id
-            ? b
-            : Object.assign({}, b, {
-                shelf: shelfTitle
-              });
-        })
-      )
-    });
-
-    /* If we can't update the API, so the changes will be reverted. */
-    update(book, shelfTitle).catch(err => {
-      this.onCommunicationError(
-        'Unable to communicate with API. Your changes will be reverted',
-        err
-      );
-    });
-  };
-
-  onCommunicationError(userErrMsg, err) {
-    if (userErrMsg) alert(userErrMsg);
-    console.log(err);
-    if (this.oldState.books.length > 0) {
-      this.setState(this.oldState);
-    }
-  }
-
-  getBooksFromAPI() {
-    getAll()
-      .then(books => {
-        this.setState({ books: this.sortBooksByTitle(books) });
-      })
-      .catch(err => {
-        this.onCommunicationError('Unable to fetch books from API.', err);
-      });
-  }
-
-  sortBooksByTitle(books) {
-    return books.sort((a, b) => a.title > b.title);
-  }
-
-  componentDidMount() {
-    this.getBooksFromAPI();
-  }
 
   render() {
     return (
@@ -76,17 +24,17 @@ class ListBooks extends React.Component {
             <Bookshelf
               shelfTitle="Currently Reading"
               books={this.getBooksForShelf('currentlyReading')}
-              onChangeShelf={this.changeBookShelf}
+              onChangeShelf={this.props.onBookChanged}
             />
             <Bookshelf
               shelfTitle="Want to Read"
               books={this.getBooksForShelf('wantToRead')}
-              onChangeShelf={this.changeBookShelf}
+              onChangeShelf={this.props.onBookChanged}
             />
             <Bookshelf
               shelfTitle="Read"
               books={this.getBooksForShelf('read')}
-              onChangeShelf={this.changeBookShelf}
+              onChangeShelf={this.props.onBookChanged}
             />
             <div className="open-search">
               <Link to="/search">Add a book</Link>
