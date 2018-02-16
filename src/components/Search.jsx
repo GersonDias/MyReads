@@ -72,7 +72,7 @@ class Search extends React.Component {
             <input
               type="text"
               placeholder="Search by title or author"
-              onChange={this.handleChange}
+              onChange={this.handleSearch}
             />
           </div>
         </div>
@@ -80,7 +80,7 @@ class Search extends React.Component {
           <Bookshelf
             shelfTitle="Search results"
             books={this.state.books}
-            onChangeShelf={this.handleSearch}
+            onChangeShelf={this.changeShelf}
           />
         </div>
       </div>

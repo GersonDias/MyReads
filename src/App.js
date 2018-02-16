@@ -1,19 +1,20 @@
 import React from 'react';
 // import * as BooksAPI from './BooksAPI'
 import './App.css';
-import { Router } from 'react-router-dom';
+import { Router, Route, Switch } from 'react-router-dom';
 import createBrowserHistory from 'history/createBrowserHistory';
-import AppRoutes from './Routes';
+import ListBooks from './components/ListBooks';
+import Search from './components/Search';
 
 class BooksApp extends React.Component {
-  state = {
-  };
-
   render() {
     return (
       <div className="app">
         <Router history={createBrowserHistory()}>
-          <AppRoutes />
+          <Switch>
+            <Route path="/" component={ListBooks} exact={true} />
+            <Route path="/search" component={Search} />
+          </Switch>
         </Router>
       </div>
     );
