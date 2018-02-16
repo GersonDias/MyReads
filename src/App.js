@@ -30,7 +30,9 @@ class BooksApp extends React.Component {
 
     /* If we can't update the API, so the changes will be reverted. */
     BooksAPI.update(book, shelfTitle)
-      .then(() => this.setState({ unchangedBooks: [] }))
+      .then(() => {
+        this.setState({ unchangedBooks: [] });
+      })
       .catch(err => {
         this.onCommunicationError(
           'Unable to communicate with API. Your changes will be reverted',
@@ -42,8 +44,13 @@ class BooksApp extends React.Component {
   onCommunicationError(userErrMsg, err) {
     if (userErrMsg) alert(userErrMsg);
     console.log(err);
-    if (this.state.oldState.books.length > 0) {
-      this.setState({ books: this.state.unchangedBooks, unchangedBooks: [] });
+    console.log(this.state);
+
+    if (this.state.unchangedBooks.length > 0) {
+      this.setState({
+        books: this.state.unchangedBooks,
+        unchangedBooks: []
+      });
     }
   }
 
@@ -52,7 +59,7 @@ class BooksApp extends React.Component {
       .then(books => {
         this.setState({
           books: this.sortBooksByTitle(books),
-          unchangedBooks: books
+          unchangedBooks: this.sortBooksByTitle(books)
         });
       })
       .catch(err => {
