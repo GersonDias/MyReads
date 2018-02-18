@@ -17,6 +17,14 @@ class BooksApp extends React.Component {
 
     let books = this.state.books;
 
+    if (!books.some(b => b.id === book.id)) {
+      books = books.concat(
+        Object.assign({}, book, {
+          shelf: shelfTitle,
+        })
+      );
+    }
+
     /* Updating the state locally, so the user doesn't need to wait the call to Update method */
     this.setState({
       books: this.sortBooksByTitle(
@@ -33,8 +41,7 @@ class BooksApp extends React.Component {
     /* If we can't update the API, so the changes will be reverted. */
     BooksAPI.update(book, shelfTitle)
       .then(() => {
-        // make shure that we'll get new books or other server side changes.
-        this.getBooksFromAPI();
+        this.setState({ unchangedBooks: [] });
       })
       .catch(err => {
         this.onCommunicationError(
