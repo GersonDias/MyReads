@@ -9,29 +9,32 @@ class BooksApp extends React.Component {
   state = {
     books: [],
     unchangedBooks: [],
-    searchedBooks: []
+    searchedBooks: [],
   };
 
   changeBookShelf = (book, shelfTitle) => {
     this.setState({ unchangedBooks: this.state.books });
 
+    let books = this.state.books;
+
     /* Updating the state locally, so the user doesn't need to wait the call to Update method */
     this.setState({
       books: this.sortBooksByTitle(
-        this.state.books.map(b => {
+        books.map(b => {
           return b.id !== book.id
             ? b
             : Object.assign({}, b, {
-                shelf: shelfTitle
+                shelf: shelfTitle,
               });
         })
-      )
+      ),
     });
 
     /* If we can't update the API, so the changes will be reverted. */
     BooksAPI.update(book, shelfTitle)
       .then(() => {
-        this.setState({ unchangedBooks: [] });
+        // make shure that we'll get new books or other server side changes.
+        this.getBooksFromAPI();
       })
       .catch(err => {
         this.onCommunicationError(
@@ -49,7 +52,7 @@ class BooksApp extends React.Component {
     if (this.state.unchangedBooks.length > 0) {
       this.setState({
         books: this.state.unchangedBooks,
-        unchangedBooks: []
+        unchangedBooks: [],
       });
     }
   }
@@ -59,7 +62,7 @@ class BooksApp extends React.Component {
       .then(books => {
         this.setState({
           books: this.sortBooksByTitle(books),
-          unchangedBooks: this.sortBooksByTitle(books)
+          unchangedBooks: this.sortBooksByTitle(books),
         });
       })
       .catch(err => {
@@ -95,7 +98,7 @@ class BooksApp extends React.Component {
 
             if (bookInAShelf) {
               return Object.assign({}, searchResult, {
-                shelf: bookInAShelf.shelf
+                shelf: bookInAShelf.shelf,
               });
             }
 
